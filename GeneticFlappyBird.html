@@ -20,23 +20,84 @@
 		let ctx = canvas.getContext("2d")
 
 		let bird = new Bird(WIDTH / 3, HEIGHT / 2)
-		let obstacle = new Obstacle(WIDTH - 100)
+
+		let speed = 2
+		let score = 0
+
+		let obstacles = [] 
+		obstacles.push(new Obstacle(WIDTH, speed))
+
 
 		document.addEventListener('keypress', function(e) {
 			bird.Flap()
 		})
 
+		// проверка на столкновение с одним из препятствий
+		function IsCollision(obstacles, bird) {
+			for (let i = 0; i < obstacles.length; i++)
+				if (obstacles[i].IsCollision(bird))
+					return true
+
+			return false
+		}
+
+		function SetSpeed(obstacles, speed) {
+			for (let i = 0; i < obstacles.length; i++)
+				obstacles[i].vx = speed
+		}
+
+		function IsInRange(x, y, dy) {
+			return (x >= y - dy) && (x <= y + dy)
+		}
+
+		function GetObstacleByPoint(obstacles, x) {
+			for (let i = 0; i < obstacles.length; i++)
+				if (obstacles[i].x > x)
+					return i
+
+			return -1
+		}
+
 		function Game() {
 			ctx.clearRect(0, 0, WIDTH, HEIGHT)
 
+			for (let i = 0; i < obstacles.length; i++) 
+				obstacles[i].Draw(ctx)
+
 			bird.Draw(ctx)
-			obstacle.Draw(ctx)
 			
-			if (!bird.IsOk() || obstacle.IsCollision(bird))
+			ctx.font = "16px Consolas"
+			ctx.fillStyle = "#f00"
+			ctx.fillText("score: " + score + ", speed :" + speed, 10, 15)
+
+			if (!bird.IsOk() || IsCollision(obstacles, bird))
 				return
 
 			bird.Update()
-			obstacle.Update()
+
+			let birdIndex1 = GetObstacleByPoint(obstacles, bird.x)
+			let index1 = GetObstacleByPoint(obstacles, WIDTH / 2)
+
+			for (let i = 0; i < obstacles.length; i++) 
+				obstacles[i].Update()
+
+			let index2 = GetObstacleByPoint(obstacles, WIDTH / 2)
+			let birdIndex2 = GetObstacleByPoint(obstacles, bird.x)
+
+			if (birdIndex1 != birdIndex2) {
+				score++
+
+				if (score % 3 == 0) {
+					speed++
+					SetSpeed(obstacles, speed)
+				}
+			}
+
+			if (index2 != index1)
+				obstacles.push(new Obstacle(WIDTH, speed))
+
+			if (obstacles[0].x + OBSTACLE_WIDTH / 2 <= 0) 
+				obstacles.shift()
 
 			window.requestAnimationFrame(Game)
 		}

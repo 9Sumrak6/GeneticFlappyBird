@@ -1,4 +1,4 @@
-const WIDTH = 500
+const WIDTH = 900
 const HEIGHT = 500
 
 const GRAVITY = 10

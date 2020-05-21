@@ -1,10 +1,10 @@
-const GAP = 100
+const GAP = 150
 const OBSTACLE_WIDTH = 50
 
-function Obstacle(x) {
+function Obstacle(x, speed) {
 	this.x = x
 	this.y = Math.floor(GAP / 3 + Math.random() * (HEIGHT - 1.5 * GAP))
-	this.vx = 1
+	this.vx = speed
 }
 
 Obstacle.prototype.Draw = function(ctx) {
