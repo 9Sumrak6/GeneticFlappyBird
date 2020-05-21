@@ -1,7 +1,6 @@
 const WIDTH = 500
 const HEIGHT = 500
 
-
 const GRAVITY = 10
 const DT = 0.2
 const SPEED = 30

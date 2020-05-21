@@ -11,6 +11,7 @@
 <body>
 	<canvas id="canvas"></canvas>
 	<script src="bird.js"></script>
+	<script src="obstacle.js"></script>
 	<script>
 		let canvas = document.getElementById("canvas")
 		canvas.width = WIDTH
@@ -19,6 +20,7 @@
 		let ctx = canvas.getContext("2d")
 
 		let bird = new Bird(WIDTH / 3, HEIGHT / 2)
+		let obstacle = new Obstacle(WIDTH - 100)
 
 		document.addEventListener('keypress', function(e) {
 			bird.Flap()
@@ -26,12 +28,16 @@
 
 		function Game() {
 			ctx.clearRect(0, 0, WIDTH, HEIGHT)
+
 			bird.Draw(ctx)
+			obstacle.Draw(ctx)
 			
-			if (!bird.IsOk())
+			if (!bird.IsOk() || obstacle.IsCollision(bird))
 				return
 
 			bird.Update()
+			obstacle.Update()
+
 			window.requestAnimationFrame(Game)
 		}
 		
