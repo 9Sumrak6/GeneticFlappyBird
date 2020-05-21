@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>flappy bird</title>
+	<style>
+		canvas {
+			border: 1px solid #000
+		}
+	</style>
+</head>
+<body>
+	<canvas id="canvas"></canvas>
+	<script src="bird.js"></script>
+	<script>
+		let canvas = document.getElementById("canvas")
+		canvas.width = WIDTH
+		canvas.height = HEIGHT
+
+		let ctx = canvas.getContext("2d")
+
+		let bird = new Bird(WIDTH / 3, HEIGHT / 2)
+
+		document.addEventListener('keypress', function(e) {
+			bird.Flap()
+		})
+
+		function Game() {
+			ctx.clearRect(0, 0, WIDTH, HEIGHT)
+			bird.Draw(ctx)
+			
+			if (!bird.IsOk())
+				return
+
+			bird.Update()
+			window.requestAnimationFrame(Game)
+		}
+		
+		window.requestAnimationFrame(Game)
+	</script>
+</body>
+</html>
