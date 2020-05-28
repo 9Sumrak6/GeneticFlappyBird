@@ -21,7 +21,8 @@
 	<script src="obstacle.js"></script>
 	<script src="network.js"></script>
 	<script>
-		const COUNT = 50
+		const COUNT = 40
+		const WINNERS = 15
 
 		let canvas = document.getElementById("canvas")
 		canvas.width = WIDTH
@@ -32,12 +33,15 @@
 		let speed = 3
 		let score = 0
 		let alive = COUNT
+		let distance = 0
+		let maxDistance = 0
+		let generation = 1
 
 		let population = []
 
 		for (let i = 0; i < COUNT; i++){
 			let bird = new Bird(WIDTH / 3, HEIGHT / 2)
-			let network = new Network([2, 3, 1])
+			let network = new Network([3, 3, 1])
 			
 			population.push({bird: bird, network: network, score: 0})
 		}
@@ -67,6 +71,7 @@
 		}
 
 		function Game() {
+			maxDistance = Math.max(distance, maxDistance)
 			ctx.clearRect(0, 0, WIDTH, HEIGHT)
 
 			for (let i = 0; i < obstacles.length; i++) 
@@ -76,6 +81,8 @@
 			ctx.fillStyle = "#f00"
 			ctx.fillText("score: " + score + ", speed :" + speed, 10, 15)
 			ctx.fillText("alive: " + alive, 10, 30)
+			ctx.fillText("generation: " + generation, 10, 45)
+			ctx.fillText("max distance: " + maxDistance, 10, 60)
 
 			let lastIndex = -1
 
@@ -85,6 +92,7 @@
 
 				if (!population[i].bird.IsOk() || population[i].bird.IsCollision(obstacles)) {
 					alive--
+					population[i].score = distance
 					population[i].bird = null
 					continue
 				}
@@ -95,37 +103,70 @@
 				let input = population[i].bird.GetInput(obstacles)
 				let output = population[i].network.GetOutput(input)
 
-				DrawLine(population[i].bird.x - population[i].bird.width / 2, population[i].bird.y, input[0], input[1])
+				DrawLine(population[i].bird.x - population[i].bird.width / 2, population[i].bird.y - population[i].bird.height / 2, input[0], input[1])
+				DrawLine(population[i].bird.x - population[i].bird.width / 2, population[i].bird.y + population[i].bird.height / 2, input[0], input[2])
 
-				if (output[0] > 0.5)
+				if (output[0] > 0.7)
 					population[i].bird.Flap()
 
 				population[i].bird.Update()
 			}
 
-			let birdIndex1 = GetObstacleByPoint(obstacles, population[lastIndex].bird.x)
-			let index1 = GetObstacleByPoint(obstacles, WIDTH / 2)
+			if (lastIndex != -1) {
+				distance++
 
-			for (let i = 0; i < obstacles.length; i++) 
-				obstacles[i].Update()
+				let birdIndex1 = GetObstacleByPoint(obstacles, population[lastIndex].bird.x)
+				let index1 = GetObstacleByPoint(obstacles, WIDTH / 2)
 
-			let index2 = GetObstacleByPoint(obstacles, WIDTH / 2)
-			let birdIndex2 = GetObstacleByPoint(obstacles, population[lastIndex].  bird.x)
+				for (let i = 0; i < obstacles.length; i++) 
+					obstacles[i].Update()
 
-			if (birdIndex1 != birdIndex2) {
-				score++
+				let index2 = GetObstacleByPoint(obstacles, WIDTH / 2)
+				let birdIndex2 = GetObstacleByPoint(obstacles, population[lastIndex].  bird.x)
 
-				if (score % 3 == 0) {
-					speed++
-					SetSpeed(obstacles, speed)
+				if (birdIndex1 != birdIndex2) {
+					score++
+
+					if (score % 3 == 0) {
+						speed++
+						SetSpeed(obstacles, speed)
+					}
 				}
+
+				if (index2 != index1)
+					obstacles.push(new Obstacle(WIDTH, speed))
+
+				if (obstacles[0].x + OBSTACLE_WIDTH / 2 <= 0) 
+					obstacles.shift()
 			}
+			else {
+				population.sort(function(a, b) {return b.score - a.score})
 
-			if (index2 != index1)
+				for (let i = 0; i < COUNT; i++) {
+					if (i < WINNERS) {
+						population[i].network = CopyNetwork(population[i].network)
+					}
+					else {
+						let parent1 = population[Math.floor(Math.random() * WINNERS)].network
+						let parent2 = population[Math.floor(Math.random() * WINNERS)].network
+
+						population[i].network = CrossOver(parent1, parent2)
+						Mutate(population[i].network, 0.1)
+					}
+
+					population[i].bird = new Bird(WIDTH / 3, HEIGHT / 2)
+				}
+
+
+				distance = 0
+				alive = COUNT
+				score = 0
+				speed = 3
+				generation++
+
+				obstacles = [] 
 				obstacles.push(new Obstacle(WIDTH, speed))
-
-			if (obstacles[0].x + OBSTACLE_WIDTH / 2 <= 0) 
-				obstacles.shift()
+			}
 
 			window.requestAnimationFrame(Game)
 		}

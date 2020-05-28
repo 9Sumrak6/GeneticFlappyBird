@@ -57,9 +57,10 @@ Bird.prototype.GetInput = function(obstacles) {
 	for (let i = 0; i < obstacles.length; i++)
 		if (obstacles[i].x + OBSTACLE_WIDTH / 2  - this.x + this.width / 2 > 0) {
 			let dx = obstacles[i].x + OBSTACLE_WIDTH / 2  - this.x + this.width / 2
-			let dy = obstacles[i].y + GAP / 2 - this.y
-			return [dx, dy]
+			let dy1 = obstacles[i].y - this.y + this.height / 2
+			let dy2 = obstacles[i].y + GAP - this.y - this.height / 2
+			return [dx, dy1, dy2]
 		}
 
-	return [0, 0]
+	return [0, 0, 0]
 }

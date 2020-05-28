@@ -1,14 +1,3 @@
-function CopyNetwork(network) {
-	let net = new Network(network.sizes)
-
-	for (let i = 0; i < network.layers.length; i++)
-		for (let j = 0; j < network.layers[i].length; j++)
-			for (let k = 0; k < network.layers[i][j].length; k++)
-				net.layers[i][j][k] = network.layers[i][j][k]
-
-	return net
-}
-
 function Network(sizes) {
 	this.sizes = sizes
 	this.layers = []
@@ -43,4 +32,37 @@ Network.prototype.GetOutput = function(input) {
 	}
 
 	return input
+}
+
+function CopyNetwork(network) {
+	let net = new Network(network.sizes)
+
+	for (let i = 0; i < network.layers.length; i++)
+		for (let j = 0; j < network.layers[i].length; j++)
+			for (let k = 0; k < network.layers[i][j].length; k++)
+				net.layers[i][j][k] = network.layers[i][j][k]
+
+	return net
+}
+
+function CrossOver(parent1, parent2) {
+	let child = new Network(parent1.sizes)
+
+	for (let i = 0; i < parent1.layers.length; i++)
+		for (let j = 0; j < parent1.layers[i].length; j++)
+			for (let k = 0; k < parent1.layers[i][j].length; k++)
+				if (Math.random() > 0.5)
+					child.layers[i][j][k] = parent1.layers[i][j][k]
+				else
+					child.layers[i][j][k] = parent2.layers[i][j][k]
+
+	return child
+}
+
+function Mutate(network, p) {
+	for (let i = 0; i < network.layers.length; i++)
+		for (let j = 0; j < network.layers[i].length; j++)
+			for (let k = 0; k < network.layers[i][j].length; k++)
+				if (Math.random() < p)
+					network.layers[i][j][k] = Math.random() - 0.5
 }
