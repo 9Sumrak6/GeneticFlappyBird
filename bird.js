@@ -1,9 +1,9 @@
-const WIDTH = 900
-const HEIGHT = 500
+const WIDTH = 1920
+const HEIGHT = 900
 
-const GRAVITY = 10
+const GRAVITY = 12
 const DT = 0.2
-const SPEED = 30
+const SPEED = 43
 
 function Bird(x, y) {
 	// координаты птицы
@@ -12,9 +12,12 @@ function Bird(x, y) {
 
 	this.vy = 0 // скорость птицы
 
+	let imgs = [ 'bird1', 'bird2', 'bird3', 'bird4', 'bird5' ]
+	this.img = document.getElementById(imgs[Math.floor(Math.random() * imgs.length)])
+
 	// размеры птицы
-	this.width = 40
-	this.height = 32
+	this.width = this.img.width;
+	this.height = this.img.height;
 }
 
 // вспархивание птицы
@@ -33,8 +36,7 @@ Bird.prototype.Update = function() {
 
 // отрисовка птицы
 Bird.prototype.Draw = function(ctx) {
-	ctx.fillStyle = "#000"
-	ctx.fillRect(this.x - this.width / 2, this.y - this.height / 2, this.width, this.height)
+	ctx.drawImage(this.img, this.x - this.width / 2, this.y - this.height / 2);
 }
 
 // проверка на достижение земли

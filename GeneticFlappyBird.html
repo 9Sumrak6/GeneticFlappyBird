@@ -10,6 +10,13 @@
 </head>
 <body>
 	<canvas id="canvas"></canvas>
+	<img id="bird1" src="imgs/bird1.png" style="display: none">
+	<img id="bird2" src="imgs/bird2.png" style="display: none">
+	<img id="bird3" src="imgs/bird3.png" style="display: none">
+	<img id="bird4" src="imgs/bird4.png" style="display: none">
+	<img id="bird5" src="imgs/bird5.png" style="display: none">
+	<img id="pipeUp" src="imgs/FlappyBirdPipeUp.png" style="display: none">
+	<img id="pipeDown" src="imgs/FlappyBirdPipeDown.png" style="display: none">
 	<script src="bird.js"></script>
 	<script src="obstacle.js"></script>
 	<script>
@@ -21,12 +28,11 @@
 
 		let bird = new Bird(WIDTH / 3, HEIGHT / 2)
 
-		let speed = 2
+		let speed = 3
 		let score = 0
 
 		let obstacles = [] 
 		obstacles.push(new Obstacle(WIDTH, speed))
-
 
 		document.addEventListener('keypress', function(e) {
 			bird.Flap()
