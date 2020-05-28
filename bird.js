@@ -43,3 +43,23 @@ Bird.prototype.Draw = function(ctx) {
 Bird.prototype.IsOk = function() {
 	return this.y + this.height / 2 < HEIGHT
 }
+
+// проверка на столкновение с одним из препятствиz
+Bird.prototype.IsCollision = function(obstacles) {
+	for (let i = 0; i < obstacles.length; i++)
+		if (obstacles[i].IsCollision(this))
+			return true
+
+	return false
+}
+
+Bird.prototype.GetInput = function(obstacles) {
+	for (let i = 0; i < obstacles.length; i++)
+		if (obstacles[i].x + OBSTACLE_WIDTH / 2  - this.x + this.width / 2 > 0) {
+			let dx = obstacles[i].x + OBSTACLE_WIDTH / 2  - this.x + this.width / 2
+			let dy = obstacles[i].y + GAP / 2 - this.y
+			return [dx, dy]
+		}
+
+	return [0, 0]
+}
